@@ -1,0 +1,93 @@
+---
+layout: default
+---
+
+<main class="post-layout">
+  <div class="container">
+    <div class="content-grid">
+
+      <article class="post-full">
+
+        <!-- Post Header -->
+        <header class="post-header">
+          <div class="post-meta-top">
+            <span class="post-category-badge">{{ page.categories | first }}</span>
+            <span class="post-date-full">{{ page.date | date: "%Y년 %m월 %d일" }}</span>
+          </div>
+          <h1 class="post-title-full">{{ page.title }}</h1>
+          {% if page.description %}
+          <p class="post-description">{{ page.description }}</p>
+          {% endif %}
+          <div class="post-divider"></div>
+        </header>
+
+        <!-- Adsense Top -->
+        {% if site.google_adsense %}
+        <div class="ad-container ad-top">
+          <ins class="adsbygoogle"
+               style="display:block"
+               data-ad-client="{{ site.google_adsense }}"
+               data-ad-slot="{{ site.ad_slot_top }}"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
+          <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+        {% endif %}
+
+        <!-- Table of Contents -->
+        <div class="toc-box">
+          <div class="toc-title">📋 목차</div>
+          <div id="toc"></div>
+        </div>
+
+        <!-- Post Content -->
+        <div class="post-content">
+          {{ content }}
+        </div>
+
+        <!-- Adsense Bottom -->
+        {% if site.google_adsense %}
+        <div class="ad-container ad-bottom">
+          <ins class="adsbygoogle"
+               style="display:block"
+               data-ad-client="{{ site.google_adsense }}"
+               data-ad-slot="{{ site.ad_slot_bottom }}"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
+          <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+        {% endif %}
+
+        <!-- Tags -->
+        {% if page.tags.size > 0 %}
+        <div class="post-tags">
+          {% for tag in page.tags %}
+          <span class="tag"># {{ tag }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Post Navigation -->
+        <nav class="post-nav">
+          {% if page.previous.url %}
+          <a href="{{ page.previous.url | relative_url }}" class="nav-prev">
+            <span class="nav-label">← 이전 글</span>
+            <span class="nav-title">{{ page.previous.title }}</span>
+          </a>
+          {% endif %}
+          {% if page.next.url %}
+          <a href="{{ page.next.url | relative_url }}" class="nav-next">
+            <span class="nav-label">다음 글 →</span>
+            <span class="nav-title">{{ page.next.title }}</span>
+          </a>
+          {% endif %}
+        </nav>
+
+      </article>
+
+      <!-- Sidebar -->
+      {% include sidebar.html %}
+
+    </div>
+  </div>
+</main>

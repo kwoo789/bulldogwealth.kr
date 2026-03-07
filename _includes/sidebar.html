@@ -1,0 +1,75 @@
+<aside class="sidebar">
+
+  <!-- Search Widget -->
+  <div class="widget search-widget">
+    <input type="text" id="sidebarSearch" class="sidebar-search-input" placeholder="🔍 검색...">
+  </div>
+
+  <!-- Popular Posts -->
+  <div class="widget popular-widget">
+    <h3 class="widget-title">🔥 인기글</h3>
+    <ul class="popular-list">
+      {% assign popular = site.posts | sort: 'views' | reverse %}
+      {% for post in site.posts limit:5 %}
+      <li class="popular-item">
+        <span class="popular-num">{{ forloop.index }}</span>
+        <a href="{{ post.url | relative_url }}" class="popular-link">{{ post.title }}</a>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <!-- Categories -->
+  <div class="widget category-widget">
+    <h3 class="widget-title">📂 카테고리</h3>
+    <ul class="category-list">
+      {% assign categories = site.categories | sort %}
+      {% for category in categories %}
+      <li class="category-item">
+        <a href="{{ '/categories/' | append: category[0] | relative_url }}" class="category-link">
+          <span class="category-name">{{ category[0] }}</span>
+          <span class="category-count">{{ category[1].size }}</span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <!-- Recent Posts -->
+  <div class="widget recent-widget">
+    <h3 class="widget-title">🕒 최근 글</h3>
+    <ul class="recent-list">
+      {% for post in site.posts limit:5 %}
+      <li class="recent-item">
+        <a href="{{ post.url | relative_url }}" class="recent-link">{{ post.title }}</a>
+        <span class="recent-date">{{ post.date | date: "%m.%d" }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <!-- Adsense Sidebar -->
+  {% if site.google_adsense %}
+  <div class="widget ad-widget">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="{{ site.google_adsense }}"
+         data-ad-slot="{{ site.ad_slot_sidebar }}"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+  {% endif %}
+
+  <!-- Tags Cloud -->
+  <div class="widget tags-widget">
+    <h3 class="widget-title">🏷️ 태그</h3>
+    <div class="tags-cloud">
+      {% assign tags = site.tags | sort %}
+      {% for tag in tags %}
+      <a href="{{ '/tags/' | append: tag[0] | relative_url }}" class="tag-cloud-item">{{ tag[0] }}</a>
+      {% endfor %}
+    </div>
+  </div>
+
+</aside>

@@ -1,0 +1,101 @@
+---
+layout: default
+---
+
+<main class="home-layout">
+  <div class="container">
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-inner">
+        <span class="hero-badge">📈 실시간 경제 인사이트</span>
+        <h1 class="hero-title">불독처럼 <em>물고 늘어지는</em><br>투자 정보</h1>
+        <p class="hero-sub">주식·ETF·부동산·재테크까지, 한국인 투자자를 위한 핵심 정보</p>
+      </div>
+      <div class="hero-ticker">
+        <div class="ticker-track">
+          <span>📊 KOSPI &nbsp;</span>
+          <span>📊 KOSDAQ &nbsp;</span>
+          <span>📊 S&P500 &nbsp;</span>
+          <span>📊 나스닥 &nbsp;</span>
+          <span>📊 달러/원 &nbsp;</span>
+          <span>📊 금 선물 &nbsp;</span>
+          <span>📊 비트코인 &nbsp;</span>
+          <span>📊 KOSPI &nbsp;</span>
+          <span>📊 KOSDAQ &nbsp;</span>
+          <span>📊 S&P500 &nbsp;</span>
+          <span>📊 나스닥 &nbsp;</span>
+          <span>📊 달러/원 &nbsp;</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="content-grid">
+
+      <!-- Main Feed -->
+      <div class="main-feed">
+
+        <!-- Featured Post -->
+        {% assign featured = site.posts | first %}
+        {% if featured %}
+        <div class="featured-post">
+          <a href="{{ featured.url | relative_url }}" class="featured-link">
+            <div class="featured-tag">✦ 최신글</div>
+            <h2 class="featured-title">{{ featured.title }}</h2>
+            <p class="featured-excerpt">{{ featured.excerpt | strip_html | truncate: 120 }}</p>
+            <div class="featured-meta">
+              <span class="post-category">{{ featured.categories | first }}</span>
+              <span class="post-date">{{ featured.date | date: "%Y.%m.%d" }}</span>
+            </div>
+          </a>
+        </div>
+        {% endif %}
+
+        <!-- Category Filter -->
+        <div class="category-filter">
+          <button class="filter-btn active" data-filter="all">전체</button>
+          <button class="filter-btn" data-filter="주식">주식</button>
+          <button class="filter-btn" data-filter="ETF">ETF</button>
+          <button class="filter-btn" data-filter="부동산">부동산</button>
+          <button class="filter-btn" data-filter="재테크">재테크</button>
+          <button class="filter-btn" data-filter="절세">절세</button>
+        </div>
+
+        <!-- Post Grid -->
+        <div class="post-grid">
+          {% for post in site.posts offset:1 limit:9 %}
+          <article class="post-card" data-category="{{ post.categories | first }}">
+            <a href="{{ post.url | relative_url }}" class="card-link">
+              <div class="card-category">{{ post.categories | first }}</div>
+              <h3 class="card-title">{{ post.title }}</h3>
+              <p class="card-excerpt">{{ post.excerpt | strip_html | truncate: 80 }}</p>
+              <div class="card-footer">
+                <span class="card-date">{{ post.date | date: "%m.%d" }}</span>
+                <span class="card-read">읽기 →</span>
+              </div>
+            </a>
+          </article>
+          {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if paginator.total_pages > 1 %}
+        <div class="pagination">
+          {% if paginator.previous_page %}
+          <a href="{{ paginator.previous_page_path | relative_url }}" class="page-btn">← 이전</a>
+          {% endif %}
+          <span class="page-info">{{ paginator.page }} / {{ paginator.total_pages }}</span>
+          {% if paginator.next_page %}
+          <a href="{{ paginator.next_page_path | relative_url }}" class="page-btn">다음 →</a>
+          {% endif %}
+        </div>
+        {% endif %}
+
+      </div>
+
+      <!-- Sidebar -->
+      {% include sidebar.html %}
+
+    </div>
+  </div>
+</main>
