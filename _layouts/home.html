@@ -56,6 +56,7 @@ layout: default
           <button class="filter-btn active" data-filter="all">전체</button>
           <button class="filter-btn" data-filter="주식">주식</button>
           <button class="filter-btn" data-filter="ETF">ETF</button>
+          <button class="filter-btn" data-filter="비트코인">비트코인</button>
           <button class="filter-btn" data-filter="부동산">부동산</button>
           <button class="filter-btn" data-filter="재테크">재테크</button>
           <button class="filter-btn" data-filter="절세">절세</button>
@@ -63,7 +64,7 @@ layout: default
 
         <!-- Post Grid -->
         <div class="post-grid">
-          {% for post in site.posts offset:1 limit:9 %}
+          {% for post in site.posts offset:1 limit:18 %}
           <article class="post-card" data-category="{{ post.categories | first }}">
             <a href="{{ post.url | relative_url }}" class="card-link">
               <div class="card-category">{{ post.categories | first }}</div>
@@ -78,18 +79,15 @@ layout: default
           {% endfor %}
         </div>
 
-        <!-- Pagination -->
-        {% if paginator.total_pages > 1 %}
-        <div class="pagination">
-          {% if paginator.previous_page %}
-          <a href="{{ paginator.previous_page_path | relative_url }}" class="page-btn">← 이전</a>
-          {% endif %}
-          <span class="page-info">{{ paginator.page }} / {{ paginator.total_pages }}</span>
-          {% if paginator.next_page %}
-          <a href="{{ paginator.next_page_path | relative_url }}" class="page-btn">다음 →</a>
-          {% endif %}
+        <!-- View All by Category -->
+        <div class="category-links-row">
+          <a href="{{ '/categories/주식/' | relative_url }}" class="cat-browse-btn">📈 주식 전체보기</a>
+          <a href="{{ '/categories/ETF/' | relative_url }}" class="cat-browse-btn">📊 ETF 전체보기</a>
+          <a href="{{ '/categories/비트코인/' | relative_url }}" class="cat-browse-btn">₿ 비트코인 전체보기</a>
+          <a href="{{ '/categories/부동산/' | relative_url }}" class="cat-browse-btn">🏠 부동산 전체보기</a>
+          <a href="{{ '/categories/재테크/' | relative_url }}" class="cat-browse-btn">💰 재테크 전체보기</a>
+          <a href="{{ '/categories/절세/' | relative_url }}" class="cat-browse-btn">🧾 절세 전체보기</a>
         </div>
-        {% endif %}
 
       </div>
 

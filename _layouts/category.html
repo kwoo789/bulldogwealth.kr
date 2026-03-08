@@ -1,0 +1,55 @@
+---
+layout: default
+---
+
+<main class="category-layout">
+  <div class="container">
+    <div class="content-grid">
+
+      <div class="main-feed">
+
+        <!-- Category Header -->
+        <div class="category-header">
+          <h1 class="category-title">
+            {% case page.category %}
+              {% when '주식' %}📈 주식
+              {% when 'ETF' %}📊 ETF
+              {% when '비트코인' %}₿ 비트코인
+              {% when '부동산' %}🏠 부동산
+              {% when '재테크' %}💰 재테크
+              {% when '절세' %}🧾 절세
+              {% else %}{{ page.category }}
+            {% endcase %}
+          </h1>
+          <p class="category-desc">
+            {% assign cat_posts = site.categories[page.category] %}
+            총 <strong>{{ cat_posts.size }}</strong>개의 글이 있습니다.
+          </p>
+        </div>
+
+        <!-- Post Grid -->
+        <div class="post-grid">
+          {% assign cat_posts = site.categories[page.category] %}
+          {% for post in cat_posts %}
+          <article class="post-card">
+            <a href="{{ post.url | relative_url }}" class="card-link">
+              <div class="card-category">{{ post.categories | first }}</div>
+              <h3 class="card-title">{{ post.title }}</h3>
+              <p class="card-excerpt">{{ post.excerpt | strip_html | truncate: 80 }}</p>
+              <div class="card-footer">
+                <span class="card-date">{{ post.date | date: "%Y.%m.%d" }}</span>
+                <span class="card-read">읽기 →</span>
+              </div>
+            </a>
+          </article>
+          {% endfor %}
+        </div>
+
+      </div>
+
+      <!-- Sidebar -->
+      {% include sidebar.html %}
+
+    </div>
+  </div>
+</main>

@@ -7,9 +7,8 @@
 
   <!-- Popular Posts -->
   <div class="widget popular-widget">
-    <h3 class="widget-title">🔥 인기글</h3>
+    <h3 class="widget-title">🔥 최신 인기글</h3>
     <ul class="popular-list">
-      {% assign popular = site.posts | sort: 'views' | reverse %}
       {% for post in site.posts limit:5 %}
       <li class="popular-item">
         <span class="popular-num">{{ forloop.index }}</span>
@@ -23,15 +22,42 @@
   <div class="widget category-widget">
     <h3 class="widget-title">📂 카테고리</h3>
     <ul class="category-list">
-      {% assign categories = site.categories | sort %}
-      {% for category in categories %}
       <li class="category-item">
-        <a href="{{ '/categories/' | append: category[0] | relative_url }}" class="category-link">
-          <span class="category-name">{{ category[0] }}</span>
-          <span class="category-count">{{ category[1].size }}</span>
+        <a href="{{ '/categories/주식/' | relative_url }}" class="category-link">
+          <span class="category-name">📈 주식</span>
+          <span class="category-count">{{ site.categories['주식'].size }}</span>
         </a>
       </li>
-      {% endfor %}
+      <li class="category-item">
+        <a href="{{ '/categories/ETF/' | relative_url }}" class="category-link">
+          <span class="category-name">📊 ETF</span>
+          <span class="category-count">{{ site.categories['ETF'].size }}</span>
+        </a>
+      </li>
+      <li class="category-item">
+        <a href="{{ '/categories/비트코인/' | relative_url }}" class="category-link">
+          <span class="category-name">₿ 비트코인</span>
+          <span class="category-count">{{ site.categories['비트코인'].size }}</span>
+        </a>
+      </li>
+      <li class="category-item">
+        <a href="{{ '/categories/부동산/' | relative_url }}" class="category-link">
+          <span class="category-name">🏠 부동산</span>
+          <span class="category-count">{{ site.categories['부동산'].size }}</span>
+        </a>
+      </li>
+      <li class="category-item">
+        <a href="{{ '/categories/재테크/' | relative_url }}" class="category-link">
+          <span class="category-name">💰 재테크</span>
+          <span class="category-count">{{ site.categories['재테크'].size }}</span>
+        </a>
+      </li>
+      <li class="category-item">
+        <a href="{{ '/categories/절세/' | relative_url }}" class="category-link">
+          <span class="category-name">🧾 절세</span>
+          <span class="category-count">{{ site.categories['절세'].size }}</span>
+        </a>
+      </li>
     </ul>
   </div>
 
@@ -65,9 +91,9 @@
   <div class="widget tags-widget">
     <h3 class="widget-title">🏷️ 태그</h3>
     <div class="tags-cloud">
-      {% assign tags = site.tags | sort %}
-      {% for tag in tags %}
-      <a href="{{ '/tags/' | append: tag[0] | relative_url }}" class="tag-cloud-item">{{ tag[0] }}</a>
+      {% assign all_tags = site.tags | sort %}
+      {% for tag in all_tags limit:30 %}
+      <span class="tag-cloud-item">{{ tag[0] }}</span>
       {% endfor %}
     </div>
   </div>

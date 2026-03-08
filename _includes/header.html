@@ -8,10 +8,12 @@
 
     <nav class="site-nav">
       <a href="{{ '/' | relative_url }}" class="nav-link {% if page.url == '/' %}active{% endif %}">홈</a>
-      <a href="{{ '/categories/주식' | relative_url }}" class="nav-link">주식</a>
-      <a href="{{ '/categories/ETF' | relative_url }}" class="nav-link">ETF</a>
-      <a href="{{ '/categories/부동산' | relative_url }}" class="nav-link">부동산</a>
-      <a href="{{ '/categories/재테크' | relative_url }}" class="nav-link">재테크</a>
+      <a href="{{ '/categories/주식/' | relative_url }}" class="nav-link {% if page.category == '주식' or page.categories contains '주식' %}active{% endif %}">주식</a>
+      <a href="{{ '/categories/ETF/' | relative_url }}" class="nav-link {% if page.category == 'ETF' or page.categories contains 'ETF' %}active{% endif %}">ETF</a>
+      <a href="{{ '/categories/비트코인/' | relative_url }}" class="nav-link {% if page.category == '비트코인' or page.categories contains '비트코인' %}active{% endif %}">비트코인</a>
+      <a href="{{ '/categories/부동산/' | relative_url }}" class="nav-link {% if page.category == '부동산' or page.categories contains '부동산' %}active{% endif %}">부동산</a>
+      <a href="{{ '/categories/재테크/' | relative_url }}" class="nav-link {% if page.category == '재테크' or page.categories contains '재테크' %}active{% endif %}">재테크</a>
+      <a href="{{ '/categories/절세/' | relative_url }}" class="nav-link {% if page.category == '절세' or page.categories contains '절세' %}active{% endif %}">절세</a>
     </nav>
 
     <div class="header-right">
@@ -38,10 +40,12 @@
   <!-- Mobile Nav -->
   <div class="mobile-nav" id="mobileNav">
     <a href="{{ '/' | relative_url }}" class="mobile-nav-link">홈</a>
-    <a href="{{ '/categories/주식' | relative_url }}" class="mobile-nav-link">주식</a>
-    <a href="{{ '/categories/ETF' | relative_url }}" class="mobile-nav-link">ETF</a>
-    <a href="{{ '/categories/부동산' | relative_url }}" class="mobile-nav-link">부동산</a>
-    <a href="{{ '/categories/재테크' | relative_url }}" class="mobile-nav-link">재테크</a>
+    <a href="{{ '/categories/주식/' | relative_url }}" class="mobile-nav-link">주식</a>
+    <a href="{{ '/categories/ETF/' | relative_url }}" class="mobile-nav-link">ETF</a>
+    <a href="{{ '/categories/비트코인/' | relative_url }}" class="mobile-nav-link">비트코인</a>
+    <a href="{{ '/categories/부동산/' | relative_url }}" class="mobile-nav-link">부동산</a>
+    <a href="{{ '/categories/재테크/' | relative_url }}" class="mobile-nav-link">재테크</a>
+    <a href="{{ '/categories/절세/' | relative_url }}" class="mobile-nav-link">절세</a>
   </div>
 
 </header>
