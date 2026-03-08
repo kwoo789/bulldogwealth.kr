@@ -50,31 +50,46 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  // ── 검색 기능 (사이드바) ──────────────────────────────
-  const sidebarSearch = document.getElementById('sidebarSearch');
-
-  if (sidebarSearch) {
-    sidebarSearch.addEventListener('input', function () {
-      const query = this.value.toLowerCase().trim();
-      if (query.length < 2) return;
-      // Jekyll 검색 데이터가 있을 경우 여기서 필터링
-    });
-  }
-
-  // ── 전체 검색 (search.json 기반) ──────────────────────────────
+  // ── 전체 검색 데이터 로드 (공통) ──────────────────────────────
   let searchData = [];
 
-  async function loadSearchData() {
-    try {
-      const res = await fetch('/search.json');
-      searchData = await res.json();
-    } catch (e) {
-      console.log('Search data not loaded yet');
-    }
+  function loadSearchData(callback) {
+    if (searchData.length > 0) { callback(); return; }
+    // baseurl을 고려한 경로
+    const basePath = (window.location.pathname.match(/^(\/[^/]+)/) || [''])[0];
+    const searchUrl = (basePath && basePath !== '/') ? basePath + '/search.json' : '/search.json';
+    fetch(searchUrl)
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        searchData = data;
+        callback();
+      })
+      .catch(function() {
+        // fallback: root에서 재시도
+        fetch('/search.json')
+          .then(function(res) { return res.json(); })
+          .then(function(data) { searchData = data; callback(); })
+          .catch(function() { console.log('Search data load failed'); });
+      });
   }
 
+  function renderResults(results, container) {
+    if (!container) return;
+    if (results.length === 0) {
+      container.innerHTML = '<div class="search-result-item search-no-result">검색 결과가 없습니다</div>';
+      return;
+    }
+    container.innerHTML = results.map(function(post) {
+      return '<a href="' + post.url + '" class="search-result-item">'
+        + '<span class="search-result-cat">' + (post.category || '') + '</span>'
+        + '<div class="search-result-title">' + post.title + '</div>'
+        + '</a>';
+    }).join('');
+  }
+
+  // ── 헤더 검색 ──────────────────────────────
   if (searchInput) {
-    loadSearchData();
+    loadSearchData(function() {});
 
     searchInput.addEventListener('input', function () {
       const query = this.value.toLowerCase().trim();
@@ -83,27 +98,64 @@ document.addEventListener('DOMContentLoaded', function () {
 
       if (query.length < 2) {
         resultsEl.innerHTML = '';
+        resultsEl.style.display = 'none';
         return;
       }
 
       const results = searchData
-        .filter(post =>
-          post.title.toLowerCase().includes(query) ||
-          post.content.toLowerCase().includes(query)
-        )
-        .slice(0, 5);
+        .filter(function(post) {
+          return post.title.toLowerCase().includes(query) ||
+                 (post.content && post.content.toLowerCase().includes(query));
+        })
+        .slice(0, 6);
 
-      if (results.length === 0) {
-        resultsEl.innerHTML = '<div class="search-result-item" style="color:var(--text-muted)">검색 결과가 없습니다</div>';
+      resultsEl.style.display = 'block';
+      renderResults(results, resultsEl);
+    });
+
+    // 외부 클릭 시 결과 닫기
+    document.addEventListener('click', function(e) {
+      const resultsEl = document.getElementById('searchResults');
+      if (resultsEl && !resultsEl.contains(e.target) && e.target !== searchInput) {
+        resultsEl.style.display = 'none';
+      }
+    });
+  }
+
+  // ── 사이드바 검색 ──────────────────────────────
+  const sidebarSearch = document.getElementById('sidebarSearch');
+  const sidebarResults = document.getElementById('sidebarSearchResults');
+
+  if (sidebarSearch && sidebarResults) {
+    loadSearchData(function() {});
+
+    sidebarSearch.addEventListener('input', function () {
+      const query = this.value.toLowerCase().trim();
+
+      if (query.length < 2) {
+        sidebarResults.innerHTML = '';
+        sidebarResults.style.display = 'none';
         return;
       }
 
-      resultsEl.innerHTML = results.map(post => `
-        <a href="${post.url}" class="search-result-item" style="display:block">
-          <span style="color:var(--accent);font-size:11px;font-weight:700">${post.category || ''}</span>
-          <div style="font-size:14px;margin-top:2px">${post.title}</div>
-        </a>
-      `).join('');
+      loadSearchData(function() {
+        const results = searchData
+          .filter(function(post) {
+            return post.title.toLowerCase().includes(query) ||
+                   (post.content && post.content.toLowerCase().includes(query));
+          })
+          .slice(0, 5);
+
+        sidebarResults.style.display = 'block';
+        renderResults(results, sidebarResults);
+      });
+    });
+
+    // 외부 클릭 시 닫기
+    document.addEventListener('click', function(e) {
+      if (!sidebarSearch.contains(e.target) && !sidebarResults.contains(e.target)) {
+        sidebarResults.style.display = 'none';
+      }
     });
   }
 
