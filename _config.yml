@@ -22,7 +22,7 @@ paginate: 9
 paginate_path: "/page:num/"
 
 # 퍼머링크
-permalink: /:categories/:title/
+permalink: /:categories/:year/:month/:day/:title/
 
 # 기본값
 defaults:
