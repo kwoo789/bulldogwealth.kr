@@ -13,22 +13,117 @@ layout: default
         <p class="hero-sub">주식·ETF·부동산·재테크까지, 한국인 투자자를 위한 핵심 정보</p>
       </div>
       <div class="hero-ticker">
-        <div class="ticker-track">
-          <span>📊 KOSPI &nbsp;</span>
-          <span>📊 KOSDAQ &nbsp;</span>
-          <span>📊 S&P500 &nbsp;</span>
-          <span>📊 나스닥 &nbsp;</span>
-          <span>📊 달러/원 &nbsp;</span>
-          <span>📊 금 선물 &nbsp;</span>
-          <span>📊 비트코인 &nbsp;</span>
-          <span>📊 KOSPI &nbsp;</span>
-          <span>📊 KOSDAQ &nbsp;</span>
-          <span>📊 S&P500 &nbsp;</span>
-          <span>📊 나스닥 &nbsp;</span>
-          <span>📊 달러/원 &nbsp;</span>
+        <div class="ticker-track" id="ticker-track">
+          <span>📊 시세 로딩 중...</span>
         </div>
       </div>
     </section>
+
+    <script>
+    (function() {
+      var tickerItems = [
+        { label: "KOSPI",   value: "--", change: "--", changeSign: "", icon: "📊" },
+        { label: "KOSDAQ",  value: "--", change: "--", changeSign: "", icon: "📊" },
+        { label: "S&P500",  value: "--", change: "--", changeSign: "", icon: "📈" },
+        { label: "나스닥",   value: "--", change: "--", changeSign: "", icon: "📈" },
+        { label: "달러/원",  value: "--", change: "",   changeSign: "", icon: "💱" },
+        { label: "금(oz)",   value: "--", change: "--", changeSign: "", icon: "🥇" },
+        { label: "비트코인", value: "--", change: "--", changeSign: "", icon: "₿"  },
+      ];
+
+      function renderTicker() {
+        var track = document.getElementById("ticker-track");
+        if (!track) return;
+        var items = tickerItems.concat(tickerItems);
+        track.innerHTML = items.map(function(item) {
+          var sign = item.changeSign === "up" ? "▲" : item.changeSign === "down" ? "▼" : "";
+          var color = item.changeSign === "up" ? "#4ade80" : item.changeSign === "down" ? "#f87171" : "#aaa";
+          return '<span style="margin-right:2.5rem;">'
+            + item.icon + ' <strong>' + item.label + '</strong>&nbsp;'
+            + item.value
+            + (item.change ? ' <span style="color:' + color + ';font-size:0.85em;">' + sign + item.change + '</span>' : '')
+            + '</span>';
+        }).join("");
+      }
+
+      function setItem(label, value, change, changeSign) {
+        var item = tickerItems.find(function(i){ return i.label === label; });
+        if (!item) return;
+        item.value = value;
+        item.change = change;
+        item.changeSign = changeSign;
+        renderTicker();
+      }
+
+      // 달러/원 환율
+      function fetchUSDKRW() {
+        fetch("https://api.frankfurter.app/latest?from=USD&to=KRW")
+          .then(function(r){ return r.json(); })
+          .then(function(data) {
+            var rate = data.rates.KRW;
+            setItem("달러/원", rate.toLocaleString("ko-KR", {maximumFractionDigits:0}) + "원", "", "");
+          }).catch(function(){});
+      }
+
+      // 비트코인
+      function fetchBTC() {
+        fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true")
+          .then(function(r){ return r.json(); })
+          .then(function(data) {
+            var price = data.bitcoin.usd;
+            var change = data.bitcoin.usd_24h_change;
+            setItem("비트코인",
+              "$" + price.toLocaleString("en-US", {maximumFractionDigits:0}),
+              Math.abs(change).toFixed(2) + "%",
+              change >= 0 ? "up" : "down"
+            );
+          }).catch(function(){});
+      }
+
+      // Yahoo Finance (allorigins proxy)
+      function fetchYahoo(symbol, label, prefix, decimals) {
+        var url = "https://query1.finance.yahoo.com/v8/finance/chart/" + symbol + "?interval=1d&range=2d";
+        var proxy = "https://api.allorigins.win/get?url=" + encodeURIComponent(url);
+        fetch(proxy)
+          .then(function(r){ return r.json(); })
+          .then(function(data) {
+            var json = JSON.parse(data.contents);
+            var result = json.chart.result[0];
+            var closes = result.indicators.quote[0].close;
+            var cur = closes[closes.length - 1];
+            var prev = closes.length >= 2 ? closes[closes.length - 2] : cur;
+            var chg = (cur - prev) / prev * 100;
+            setItem(label,
+              (prefix || "") + cur.toLocaleString("en-US", {maximumFractionDigits: decimals || 0}),
+              Math.abs(chg).toFixed(2) + "%",
+              chg >= 0 ? "up" : "down"
+            );
+          }).catch(function(){});
+      }
+
+      renderTicker();
+
+      fetchUSDKRW();
+      fetchBTC();
+      fetchYahoo("^GSPC",  "S&P500",  "",  0);
+      fetchYahoo("^IXIC",  "나스닥",   "",  0);
+      fetchYahoo("GC=F",   "금(oz)",   "$", 1);
+      fetchYahoo("^KS11",  "KOSPI",    "",  2);
+      fetchYahoo("^KQ11",  "KOSDAQ",   "",  2);
+
+      // 5분마다 자동 갱신
+      setInterval(function() {
+        fetchUSDKRW();
+        fetchBTC();
+        fetchYahoo("^GSPC", "S&P500",  "",  0);
+        fetchYahoo("^IXIC", "나스닥",   "",  0);
+        fetchYahoo("GC=F",  "금(oz)",   "$", 1);
+        fetchYahoo("^KS11", "KOSPI",    "",  2);
+        fetchYahoo("^KQ11", "KOSDAQ",   "",  2);
+      }, 300000);
+
+    })();
+    </script>
 
     <div class="content-grid">
 
@@ -56,7 +151,6 @@ layout: default
           <button class="filter-btn active" data-filter="all">전체</button>
           <button class="filter-btn" data-filter="주식">주식</button>
           <button class="filter-btn" data-filter="ETF">ETF</button>
-          <button class="filter-btn" data-filter="비트코인">비트코인</button>
           <button class="filter-btn" data-filter="부동산">부동산</button>
           <button class="filter-btn" data-filter="재테크">재테크</button>
           <button class="filter-btn" data-filter="절세">절세</button>
@@ -64,7 +158,7 @@ layout: default
 
         <!-- Post Grid -->
         <div class="post-grid">
-          {% for post in site.posts offset:1 limit:18 %}
+          {% for post in site.posts offset:1 limit:9 %}
           <article class="post-card" data-category="{{ post.categories | first }}">
             <a href="{{ post.url | relative_url }}" class="card-link">
               <div class="card-category">{{ post.categories | first }}</div>
@@ -79,15 +173,18 @@ layout: default
           {% endfor %}
         </div>
 
-        <!-- View All by Category -->
-        <div class="category-links-row">
-          <a href="{{ '/categories/주식/' | relative_url }}" class="cat-browse-btn">📈 주식 전체보기</a>
-          <a href="{{ '/categories/ETF/' | relative_url }}" class="cat-browse-btn">📊 ETF 전체보기</a>
-          <a href="{{ '/categories/비트코인/' | relative_url }}" class="cat-browse-btn">₿ 비트코인 전체보기</a>
-          <a href="{{ '/categories/부동산/' | relative_url }}" class="cat-browse-btn">🏠 부동산 전체보기</a>
-          <a href="{{ '/categories/재테크/' | relative_url }}" class="cat-browse-btn">💰 재테크 전체보기</a>
-          <a href="{{ '/categories/절세/' | relative_url }}" class="cat-browse-btn">🧾 절세 전체보기</a>
+        <!-- Pagination -->
+        {% if paginator.total_pages > 1 %}
+        <div class="pagination">
+          {% if paginator.previous_page %}
+          <a href="{{ paginator.previous_page_path | relative_url }}" class="page-btn">← 이전</a>
+          {% endif %}
+          <span class="page-info">{{ paginator.page }} / {{ paginator.total_pages }}</span>
+          {% if paginator.next_page %}
+          <a href="{{ paginator.next_page_path | relative_url }}" class="page-btn">다음 →</a>
+          {% endif %}
         </div>
+        {% endif %}
 
       </div>
 
